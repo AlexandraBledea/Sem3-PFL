@@ -1,0 +1,20 @@
+; 3. Define a function to tests the membership of a node in a n-tree represented as (root
+;    list_of_nodes_subtree1 ... list_of_nodes_subtreen)
+;    Eg. tree is (a (b (c)) (d) (E (f))) and the node is "b" => true
+
+
+
+; checkExistence(l, elem)
+; = true, if l = elem
+; = false, if l != elem
+; = checkExistence(l1, elem) or checkExistence(l2,elem) or ... or checkExistence(ln,elem), otherwise (if l is a list of the form:
+; l = l1l2...ln)
+
+
+(defun checkExistence(l elem)
+  (cond
+    ((and (atom l) (equal l elem)) t)
+    ((atom l) nil)
+    (t (some #'identity (mapcar #'(lambda (a) (checkExistence a elem)) l)))
+  )
+)

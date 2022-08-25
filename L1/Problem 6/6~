@@ -1,0 +1,46 @@
+;a) Write a function to test whether a list is linear.
+
+; checkLinear(l1l2...ln) = 
+; = true, if n = 0
+; = false, if l1 is a list
+; = checkLinear(l2...ln), otherwise
+
+
+(defun checkLinear(l)
+  (cond
+    ((null l) t)
+    ((listp (car l)) nil)
+    (t (checkLinear (cdr l)))
+  )
+)
+
+;b) Write a function to replace the first occurence of an element E in a given list with an other element O.
+
+; replaceFirstOcc(l1l2...ln, elem, newElem) = 
+; = nil , if n = 0
+; = {newElem} U (l2...ln), if elem = l1
+; = {l1} U replaceFirstOcc(l2...ln), otherwise
+
+(defun replaceFirstOcc(l elem newElem)
+  (cond
+    ((null l) nil)
+    ((equal elem (car l)) (cons newElem (cdr l)))
+    (t (cons (car l) (replaceFirstOcc (cdr l) elem newElem)))
+  )
+)
+
+;--- the function from above works only for a linear list
+
+
+; searchElement(l1l2...ln, elem) = 
+; = nil (false) , if n = 0
+; = true , if l1 = elem
+; = searchElement(l2...ln), otherwise
+
+(defun searchElement(l elem)
+  (cond
+    ((null l) nil)
+    ((equal (car l) elem) t)
+    (t (searchElement (cdr l) elem))
+  )
+)

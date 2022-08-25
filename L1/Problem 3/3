@@ -1,0 +1,134 @@
+; a) Write a function that inserts in a linear list a given atom A after the 2nd, 4th, 6th, ... element.
+
+
+; insertElem(l1l2...ln, elem, pos) = 
+; = NIL, if n = 0
+; = {l1} U {elem} U insertElem(l2...ln, elem, pos + 1) , if pos % 2 = 0
+; = {l1} U insertElem(l2...ln, elem, pos + 1) , otherwise
+
+
+(defun insertElem(l e pos)
+  (cond
+    ((null l) nil)
+    ((equal (mod pos 2) 0) (cons (car l) (cons e (insertElem (cdr l) e (+ 1 pos)))))
+    (t (cons (car l) (insertElem (cdr l) e (+ 1 pos))))
+  )
+)
+
+(defun mainA(l e)
+  (insertElem l e 1)
+)
+
+
+; b) Write a function to get from a given list the list of all atoms, on any
+; level, but reverse order. Example:
+; (((A B) C) (D E)) ==> (E D C B A)
+
+
+; myAppend(l1l2...ln, p1p2...pm) = 
+; = p1p2...pm, if n = 0
+; = {l1} U myAppend(l2...ln, p1p2...pm) , otherwise
+
+
+(defun myAppend(l1 l2)
+  (cond
+    ((null l1) l2)
+    (t (cons (car l1) (myAppend (cdr l1) l2)))
+  )
+)
+
+
+; getAllAtoms(l1l2...ln) = 
+; = NIL , if n = 0
+; = myAppend(getAllAtoms(l2...ln), getAllAtoms(l1)) , if l1 is a list
+; = myAppend(getAllAtoms(l2...ln), list(l1)) , otherwise
+
+(defun getAllAtoms (l)
+  (cond
+    ((null l) nil)
+    ((listp (car l)) (myAppend (getAllAtoms (cdr l)) (getAllAtoms (car l))))
+    (t (myAppend (getAllAtoms (cdr l)) (list (car l))))
+  )
+)    
+
+
+;c) Write a function that returns the greatest common divisor of all numbers in a nonlinear list.
+
+;myGCD(a, b) =
+; = a , if b is not a number
+; = b , if a is not a number
+; = a , if b = 0
+; = myGCD(b, a%b) , otherwise
+
+
+(defun myGCD(a b)
+  (cond
+    ((not (numberp a)) b)
+    ((not (numberp b)) a)
+    ((= 0 b) a)
+    (t (myGCD b (mod a b)))
+  )
+)
+
+;The following function will return NIL if there is no number and True otherwise
+; lookForNumbers(l1l2...ln) = 
+; = NIL , if n = 0
+; = lookForNumbers(l1) or lookForNumbers(l2...ln) , if l1 is a list
+; = true , if l1 is a number
+; = lookForNumbers(l2...ln) , otherwise
+
+(defun lookForNumbers(l)
+  (cond
+    ((null l) nil)
+    ((listp (car l)) (or (lookForNumbers (car l)) (lookForNumbers (cdr l))))
+    ((numberp (car l)) T)
+    (t (lookForNumbers (cdr l)))
+  )
+)
+
+; gcdForAllNumbers(l1l2...ln) = 
+; = l1 , if n = 1
+; = myGCD(gcdForAllNumbers(l1), gcdForAllNumbers(l2...ln)) , if l1 is a list
+; = myGCD(l1, gcdForAllNumbers(l2...ln)) , otherwise
+
+
+(defun gcdForAllNumbers(l)
+  (cond
+    ((null (cdr l)) (car l))
+    ((listp (car l)) (myGCD (gcdForAllNumbers (car l)) (gcdForAllNumbers (cdr l))))
+    (t (myGCD (car l) (gcdForAllNumbers (cdr l))))
+  )
+)
+
+;If we don't have any numbers in the list we simply return 1
+;Otherwise we go look for the gcd
+(defun main(l)
+  (cond
+    ((lookForNumbers l) (gcdForAllNumbers l))
+    (t 1)
+  )
+)
+
+
+;d) Write a function that determines the number of occurrences of a given atom in a nonlinear list.
+
+; nrOfOccurrences(l1l2...ln, c, elem) = 
+; = c , if n = 0
+; = nrOfOccurences(l1, 0, elem) + nrOfOccurences(l2...ln, c, elem) , if l1 is a list
+; = nrOfOccurences(l2...ln, c + 1, elem) , if l1 = elem
+; = nrOfOccurences(l2...ln, c, elem) , otherwise
+
+
+(defun nrOfOccurences(l c elem)
+  (cond
+    ((null l) c)
+    ((listp (car l)) (+ (nrOfOccurences (car l) 0 elem) (nrOfOccurences (cdr l) c elem)))
+    ((equal (car l) elem) (nrOfOccurences (cdr l) (+ 1 c) elem))
+    (t (nrOfOccurences (cdr l) c elem))
+  )
+)
+
+
+(defun mainD(l elem)
+  (nrOfOccurences l 0 elem)
+)

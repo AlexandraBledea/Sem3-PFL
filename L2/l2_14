@@ -1,0 +1,22 @@
+
+(defun traverseTreeMain (l)
+  (traverseTree l nil)
+)
+
+(defun traverseTree (l lc)
+
+ (cond
+
+   ((and (null l) (null lc)) nil)
+   
+   ((null l) (append nil (traverseTree lc nil)))
+
+   ((=(cadr l) 0) (append   (list (car l))  (traverseTree (cddr l) lc)  ))
+
+   ((= (cadr l) 1) (append nil  (traverseTree (cddr l) (append ( list (car l) (- (cadr l) 1) ) lc))))
+   
+   (t (append nil (traverseTree (cddr l) (append lc (list (car l) (- (cadr l)1))))))
+ 
+  )
+
+)

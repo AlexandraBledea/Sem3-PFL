@@ -1,0 +1,93 @@
+% 9. Generate all permutation of N (N - given) respecting the property: for every 2<=i<=n exists an 1<=j<=i,
+%    so |v(i)-v(j)|=1.
+
+
+% insert(elem, l1l2...ln) = 
+% = {elem} U l1l2...ln
+% = {l1} U insert(l2...ln, elem)
+
+% insert(L:list, E: element, R: result list)
+% (i,i,o)
+
+
+insert(E,L,[E|L]).
+insert(E,[H|T],[H|R]):-
+    insert(E,T,R).
+
+
+% perm(l1l2...ln) = 
+% = [], if n = 0 
+% = insert(l1, perm(l2...ln)), otherwise
+
+% perm(L:list, R: result list)
+% (i,o)
+
+perm([],[]).
+perm([H|T],R1):-
+    perm(T,R),
+    insert(H,R,R1).
+
+% absDiff(a,b) = 
+% = a - b, if a >= b
+% = b - a, otherwise
+
+absDiff(A,B,R):-
+    A >= B,
+    R is A - B.
+absDiff(A,B,R):-
+    A < B,
+    R is B - A.
+
+% checkAbsDiff(l1...ln, e) =
+% 	true, n = 0
+% 	true, absDiff(l1, e) = 1
+% 	checkAbsDiff(l2...ln, e), n > 0
+% 	false, otherwise
+
+checkAbsDiff([],_):-!.
+checkAbsDiff([H|_],E):-
+    absDiff(H,E,R),
+    R=:=1,
+    !.
+checkAbsDiff([_|T],E):-
+    checkAbsDiff(T,E).
+
+
+% checkPerms(l1l2...ln) = 
+% = true, if n = 0
+% = checkPerms(l2...ln), if checkAbsDiff(l1,l2...ln) = true
+% = false, otherwise
+
+checkPerms([]):-!.
+checkPerms([H|T]):-
+    checkAbsDiff(T,H),
+    checkPerms(T).
+
+
+% createList(n) = 
+% = [], if n = 0
+% = n + createList(n-1), if n > 0
+
+% createList(N:number, R:result list)
+% (i,o)
+
+createList(0,[]).
+createList(N,[N|R]):-
+    N > 0,
+    N1 is N - 1,
+    createList(N1, R).
+
+% oneSol(l1l2...ln, r1r2...rm) = 
+% = perm(l1l2...ln, r1r2...rm), if checkAbsDiff(l1l2...ln) = true
+
+oneSol(L,R):-
+    perm(L,R),
+    checkPerms(R).
+
+%allSols(N:number, R:result list)
+% (i,o)
+
+allSols(N,R):-
+    createList(N,RL),
+    findall(RPartial,oneSol(RL,RPartial),R).
+

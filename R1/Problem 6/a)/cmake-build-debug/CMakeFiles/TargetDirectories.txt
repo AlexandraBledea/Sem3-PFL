@@ -1,0 +1,3 @@
+C:/Users/night/Desktop/Facultate An 2/Semestrul 1/Functional and Logic Programming/Laboratory/Lab1/Problem 6/a)/cmake-build-debug/CMakeFiles/a_.dir
+C:/Users/night/Desktop/Facultate An 2/Semestrul 1/Functional and Logic Programming/Laboratory/Lab1/Problem 6/a)/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/night/Desktop/Facultate An 2/Semestrul 1/Functional and Logic Programming/Laboratory/Lab1/Problem 6/a)/cmake-build-debug/CMakeFiles/rebuild_cache.dir

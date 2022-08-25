@@ -1,0 +1,65 @@
+% 5. Two integers, n and m are given. Write a predicate to determine all possible sequences of numbers
+%    from 1 to n, such that between any two numbers from consecutive positions, the absolute difference to be >= m.
+
+% absDiff(a,b) = 
+% = a - b, if a >= b
+% = b - a, otherwise
+
+% absDiff(A:number,B:number,R:number)
+% (i,i,o)
+
+absDiff(A,B,R):-
+    A >= B,
+    R is A - B.
+absDiff(A,B,R):-
+    A < B,
+    R is B - A.
+
+% checkAbsDiff(l1l2...ln, m) = 
+% = true, if n = 2 and absDiff(l1,l2) >= m
+% = checkAbsDiff(l2...ln, m), if absDiff(l1,l2) >= m
+% = false, otherwise
+
+% checkAbsDiff(L:list, M:number, R:result list)
+% (i,i,o)
+
+checkAbsDiff([H1,H2],M):-
+    absDiff(H1,H2,R),
+    R >= M.
+checkAbsDiff([H1,H2|T],M):-
+    absDiff(H1,H2,R),
+    R >= M,
+    checkAbsDiff([H2|T],M).
+
+% sequence(i, n) = 
+% = [], if i = n + 1
+% = {i} U sequence(i + 1, n), if i <= n
+% = sequence(i + 1, n), if i <= n
+
+
+% sequence(I:number, N:number, R:list)
+% (i,i,o)
+
+sequence(I,N,[]):-
+    I =:= N + 1.
+sequence(I,N,[I|R]):-
+    I =< N,
+    I1 is I + 1,
+    sequence(I1,N,R).
+sequence(I,N,R):-
+    I =< N,
+    I1 is I + 1,
+    sequence(I1, N, R).
+
+% oneSol(n, m, r1r2...rk) = 
+% sequence(1, n, r1r2...rk), if checkAbsDiff(r1r2...rk, m) = true
+
+% oneSol(I:number, N:number, R:list)
+% oneSol(i,i,o)
+
+oneSol(N,M,R):-
+    sequence(1,N,R),
+    checkAbsDiff(R,M).
+
+allSols(N,M,R):-
+    findall(RPartial,oneSol(N,M,RPartial),R).

@@ -1,0 +1,120 @@
+;a) Write a function to return the difference of two sets.
+
+; myAppend(l1l2...ln, p1p2...pm) = 
+; = p1p2...pm, if n = 0
+; = {l1} U myAppend(l2...ln, p1p2...pm) , otherwise
+
+(defun myAppend (l p)
+  (cond
+    ((null l) p)
+    (t (cons (car l) (myAppend (cdr l) p)))
+  )
+)
+
+; checkExistence(l1l2...ln, elem) = 
+; = false (nil) , if n = 0
+; = true , if l1 = elem
+; = checkExistence(l2...ln, elem) , otherwise
+
+(defun checkExistence(l elem)
+  (cond
+    ((null l) nil)
+    ((equal (car l) elem) t)
+    (t (checkExistence (cdr l) elem))
+  )
+)
+
+; diffSets(l1l2...ln, p1p2...pm, r) = 
+; = p1p2...pm, if n = 0
+; = diffSets(l2...ln, p1p2...pm, r) , if checkExistence(p1p2...pm, l1)
+; = diffSets(l2...ln, p1p2...pm, r U {l1}) , otherwise
+
+
+(defun diffSets(l p r)
+  (cond
+    ((null l) r)
+    ((checkExistence p (car l)) (diffSets (cdr l) p r))
+    (t (diffSets (cdr l) p (myAppend r (list (car l)))))
+  )
+)
+
+
+(defun mainA(l p)
+  (myAppend (diffSets l p (list )) (diffSets p l (list )))
+)
+
+
+;b) Write a function to reverse a list with its all sublists, on all levels.
+
+; myReverse(l1l2...ln) = 
+; = nil , if n = 0
+; = myAppend(myReverse(l2...ln), list(myReverse(l1))), if l1 is a list
+; = myAppend(myReverse(l2...ln), list(l1)), otherwise
+
+
+(defun myReverse(l)
+  (cond
+    ((null l) nil)
+    ((listp (car l)) (myAppend (myReverse (cdr l)) (list (myReverse (car l)))))
+    (t (myAppend (myReverse (cdr l)) (list (car l))))
+  )
+)
+
+
+; c) Write a function to return the list of the first elements of all list elements of a given list with an odd
+;    number of elements at superficial level. Example:
+;    (1 2 (3 (4 5) (6 7)) 8 (9 10 11)) => (1 3 9).
+
+
+; oddNrOfElems(l1l2...ln, c) =
+; = true , if n = 0 and c % 2 = 1
+; = false (nil) , if n = 0 and c % 2 = 0
+; = oddNrOfElems(l2...ln, c + 1) , otherwise
+
+(defun oddNrOfElems(l c)
+  (cond
+    ((and (null l) (equal 1 (mod c 2))) t)
+    ((and (null l) (equal 0 (mod c 2))) nil)
+    (t (oddNrOfElems (cdr l) (+ 1 c)))
+  )
+)
+
+(defun checkOdd(l)
+  (oddNrOfElems l 0)
+)
+
+; firstElem(l1l2...ln, f) = 
+; = nil , if n = 0
+; = myAppend(firstElem(l1, 0), firstElem(l2...ln, f)) , if l1 is a list
+; = {l1} U firstElem(l2...ln, 1) , if checkOdd(l1l2...ln) is true and f = 0
+; = firstElem(l2...ln, 1) , otherwise
+
+(defun firstElem(l f)
+  (cond
+    ((null l) nil)
+    ((listp (car l)) (myAppend (firstElem (car l) 0) (firstElem (cdr l) f)))
+    ((and (checkOdd l) (= f 0)) (cons (car l) (firstElem (cdr l) 1)))
+    (t (firstElem(cdr l) 1))
+  )
+)
+
+(defun mainC(l)
+  (firstElem l 0)
+)
+
+
+; d) Write a function to return the sum of all numerical atoms in a list at superficial level.
+
+; sum(l1l2...ln) = 
+; = 0 , if n = 0
+; = l1 + sum(l2...ln), if l1 is a number
+; = sum(l2...ln), otherwise
+
+
+(defun sum(l)
+  (cond
+    ((null l) 0)
+    ((numberp (car l)) (+ (car l) (sum (cdr l))))
+    (t (sum (cdr l)))
+  )
+)

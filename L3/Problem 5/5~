@@ -1,0 +1,15 @@
+; 5. Write a function that computes the sum of even numbers and then decrease the sum of odd numbers from that sum,
+;    at any level of a list.
+
+
+; findSign(a) = 
+; = a, if a % 2 = 0
+; = -a
+
+
+(defun findSign(a)
+  (cond
+    ((equal 0 (mod a 2)) a)
+    (t (- a))
+  )
+)

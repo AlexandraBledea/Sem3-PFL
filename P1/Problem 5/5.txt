@@ -1,0 +1,64 @@
+% a. Write a predicate to compute the union of two sets.
+
+% removeOccurence(l1l2...ln, elem) = 
+% = [], if n =0
+% = removeOccurence(l2...ln, elem), if l1 = elem
+% = {l1} U removeOccurence(l2...ln, elem), otherwise
+
+% removeOccurence(L:list, E:number, R:list)
+% (i,i,o)
+
+removeOccurence([],_,[]).
+removeOccurence([H|T],E,R):-
+    H=:=E,
+    removeOccurence(T,E,R).
+removeOccurence([H|T],E,[H|R]):-
+    H=\=E,
+    removeOccurence(T,E,R).
+
+% union(l1l2...ln, p1p2...pm) = 
+% = [], if n = 0 and m = 0
+% = {l1} U union(removeOccurence(l1l2...ln, l1), removeOccuence(p1p2...pm, l1)), if n > 0
+% = union(p1p2...pm, []), if n = 0
+
+% union(L:list,P:list,R:list)
+% (i,i,o)
+
+union([],[],[]).
+union([H|T],P,[H|R]):-
+    removeOccurence([H|T],H,R1),
+    removeOccurence(P,H,R2),
+    union(R1,R2,R).
+union([],P,R):-
+    union(P,[],R).
+
+
+% b. Write a predicate to determine the set of all the pairs of elements in a list.
+% Eg.: L = [a b c d] => [[a b] [a c] [a d] [b c] [b d] [c d]].
+
+% sets(l1l2...ln, k) = 
+% = [], if k = 0
+% = l1 + sets(l2...ln, k - 1), if k > 0
+% = sets(l2...ln, k), if k > 0
+
+% sets(L:list, K:number, R:list)
+% (i,i,o)
+
+sets(_,0,[]).
+sets([H|T],K,[H|R]):-
+    K1 is K - 1,
+    sets(T,K1,R).
+sets([_|T],K,R):-
+     sets(T,K,R).   
+
+
+% Model matematic:
+% gen_sets(l1..ln) =
+% 	[], n = 0
+% 	findall(sets(l1...ln, 2))
+
+% gen_sets(L:list, R:list)
+% gen_sets(i, o)
+
+gen_sets([], []).
+gen_sets(L, R) :- findall(RS, sets(L, 2, RS), R).

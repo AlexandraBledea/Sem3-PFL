@@ -1,0 +1,48 @@
+% a. Insert an element on the position n in a list
+
+% insertAtPos(l1l2...ln, elem, pos) = 
+% = {elem} U l1l2...ln, if p = 0
+% = insertAtPos(l2...ln, elem, pos - 1)
+
+% insertAtPos(L:List,E:number,P:number,R:List) 
+% (i,i,i,o)
+
+insertAtPos(L,E,0,[E|L]):-!.
+insertAtPos([H|T],E,P,[H|R]):-
+    P1 is P - 1,
+    insertAtPos(T,E,P1,R).
+                
+
+% b. Define a predicate to determine the greatest common divisor of all numbers from a list.
+
+% myGCD(a,b)=
+% = a, if b = 0
+% = b, if a = 0
+% = myGCD(a % b, b), a >= b
+% = myGCD(a, b % a), a < b
+
+% myGCD(A:number,B:number,R:number)
+% (i,i,o)
+
+myGCD(0,B,B):-!.
+myGCD(A,0,A):-!.
+myGCD(A,B,R):-
+    A>=B,
+    A1 is A mod B,
+    myGCD(A1,B,R).
+myGCD(A,B,R):-
+    A<B,
+    B1 is B mod A,
+    myGCD(A,B1,R).
+
+% listGCD(l1l2...ln) = 
+% = l1 , if n = 1
+% myGCD(l1, listGCD(l2...ln)), otherwise
+
+% listGCD(L:list,R:list)
+% (i,o)
+
+listGCD([H],H).
+listGCD([H|T],R1):-
+    listGCD(T,R),
+    myGCD(H,R,R1).

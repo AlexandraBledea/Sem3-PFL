@@ -1,0 +1,12 @@
+; 
+
+
+(defun convert_tree(l)
+    (cond
+         ((null l) nil)
+         ((and (not (null (cadr l))) (not (null (caddr l)))) (append (list (car l)) '(2) (convert_tree(cadr l)) (convert_tree(caddr l))))
+         ((not (null (cadr l))) (append (list (car l)) '(1) (convert_tree(cadr l)) ))
+         ((not (null (caddr l))) (append (list (car l)) '(1) (convert_tree(caddr l)) ))
+         (T (append (list (car l)) '(0)))
+    )
+)

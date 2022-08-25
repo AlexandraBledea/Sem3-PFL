@@ -1,0 +1,65 @@
+% 1.
+% a. Write a predicate to determine the lowest common multiple of a list formed from integer numbers.
+
+% Model matematic:
+% gcd(A, B) =
+%	A, if B = 0
+%	B, if A = 0
+%	gcd(A % B, B), if A >= B
+%	gcd(A, B % A), A < B
+
+% gcd(A:number, B:number, R:number)
+% gcd(i, i, o)
+
+gcd(0, B, B):- !.
+gcd(A, 0, A):- !.
+gcd(A, B, R):-
+    A >= B, 
+	A1 is A mod B,
+	gcd(A1, B, R), !.
+gcd(A, B, R):-
+	A < B,
+	B1 is B mod A,
+	gcd(A, B1, R), !.
+
+% Model matematic:
+% lcm(a, b) = a * b / gcd(a, b)
+
+lcm(A, B, R):-
+    gcd(A, B, RGCD),
+    R is A * B / RGCD.
+
+% Model matematic:
+% lcmList(l1l2...ln) = 
+% = l1 , if n = 1
+% = lcm(l1, lcmList(l2...ln)), otherwise
+
+lcmList([E], E).
+lcmList([H|T], R):-
+    lcmList(T, R1),
+    lcm(H, R1, R).
+
+
+% b. Write a predicate to add a value v after 1-st, 2-nd, 4-th, 8-th, ... element in a list.
+
+% insertAtPos(l1l2...ln, v, pos, index) =
+% = [], if n = 0 
+% = {l1} U {v} U insertAtPos(l2...ln, v, pos*2, index + 1), if index = pos
+% = {l1} U insertAtPos(l2...ln, v, pos, index + 1), if pos != index
+
+%insertAtPos(L:list, V: number, POS: number, INDEX: number, R: list)
+%insertAtPos(i,i,i,i,o)
+
+insertAtPos([], _, _, _, []).
+insertAtPos([H|T], V, POS, INDEX, [H, V | R]):-
+    POS=:=INDEX,
+    NewPos is POS * 2,
+    NewIndex is INDEX + 1,
+    insertAtPos(T, V, NewPos, NewIndex, R).
+insertAtPos([H|T], V, POS, INDEX, [H | R]):-
+    NewIndex is INDEX + 1,
+    insertAtPos(T, V, POS, NewIndex, R).
+
+
+insertMain(L, V, R):- 
+    insertAtPos(L, V, 1, 1, R).

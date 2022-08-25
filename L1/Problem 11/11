@@ -1,0 +1,218 @@
+;a) Determine the least common multiple of the numerical values of a nonlinear list.
+
+; myGCD(a, b) = 
+; = a , if b is not a number
+; = b , if a is not a number
+; = a , if b = 0
+; = myGCD(b, a%b) , otherwise
+
+(defun myGCD(a b)
+  (cond
+    ((not (numberp b)) a)
+    ((not (numberp a)) b)
+    ((equal 0 b) a)
+    (t (myGCD b (mod a b)))
+  )
+)
+
+; myLCM(a, b) = 
+; = a , if b is not a number
+; = b , if a is not a number
+; = a * b / myGCD(a, b) , otherwise
+
+
+(defun myLCM(a b)
+  (cond
+    ((not (numberp b)) a)
+    ((not (numberp a)) b)
+    (t (/ (* a b) (myGCD a b)))
+  )
+)
+
+
+; lookForNumbers(l1l2...ln) = 
+; nil , if n = 0
+; lookForNumbers(l1) or lookForNumbers(l2...ln) , if l1 is a list
+; true , if l1 is a number
+; lookForNumbers(l2...ln) , otherwise
+
+
+(defun lookForNumbers (l)
+  (cond
+    ((null l) nil)
+    ((listp (car l)) (or (lookForNumbers (car l)) (lookForNumbers (cdr l))))
+    ((numberp (car l)) t)
+    (t (lookForNumbers (cdr l)))
+  )
+)
+
+; lcmForList(l1l2...ln) = 
+; = l1 , if n = 1
+; = myLCM(lcmForList(l1) , lcmForList(l2...ln)) , if l1 is a list
+; = myLCM(l1, lcmForList(l2...ln) , otherwise  
+
+
+(defun lcmForList(l)
+  (cond
+    ((null (cdr l)) (car l))
+    ((listp (car l)) (myLCM (lcmForList (car l)) (lcmForList (cdr l))))
+    (t (myLCM (car l) (lcmForList (cdr l))))
+  )
+)
+
+; First we check if we have any numbers in the list, if we don't have any numbers , we return 1, otherwise we go
+; look for the least common multiple in the entire list on each level
+(defun mainA(l)
+  (cond
+    ((lookForNumbers l) (lcmForList l))
+    (t 1)
+  )
+)
+
+
+
+; b) Write a function to test if a linear list of numbers has a "mountain" aspect (a list has a "mountain"
+;    aspect if the items increase to a certain point and then decreases.
+;    Eg. (10 18 29 17 11 10). The list must have at least 3 atoms to fullfil this criteria.
+
+; f = 0 for an increasing sequence
+; f = 1 for a decreasing sequence
+; mountain(l1l2...ln, f) = 
+; = true , if n <= 1 and f = 1
+; = mountain(l2...ln, 0), if l1 <= l2 and f = 0
+; = mountain(l2...ln, 1), if l1 >= l2 and f = 0
+; = mountain(l2...ln, 1), if l1 >= l2 and f = 1
+; = false , otherwise
+
+
+(defun mountain(l f)
+  (cond
+    ((and (null (cdr l)) (= f 1)) t)
+    ((and (<= (car l) (cadr l)) (= f 0)) (mountain (cdr l) 0))
+    ((and (>= (car l) (cadr l)) (= f 0)) (mountain (cdr l) 1))
+    ((and (>= (car l) (cadr l)) (= f 1)) (mountain (cdr l) 1))
+    (t nil)
+  )
+)
+
+; mainB(l1l2...ln) = 
+; = nil (false) , if n = 0
+; = nil (false) , if n = 1
+; = nil (false) , if n = 2
+; = mountain(l1l2...ln, 0) , otherwise
+
+;In order to check for the mountain aspect, our list need to have at least 3 elements
+(defun mainB(l)
+  (cond
+    ((null l) nil)
+    ((null (cadr l)) nil)
+    ((null (caddr l)) nil)
+    (t (mountain l 0))
+  )
+)
+
+
+; c) Remove all occurrences of a maximum numerical element from a nonlinear list.
+
+; myMax(a, b) = 
+; = a , if b is not a number
+; = b , if a is not a number
+; = a , if a > b
+; = b , otherwise
+
+(defun myMax(a b)
+  (cond
+    ((not (numberp b)) a)
+    ((not (numberp a)) b)
+    (( > a b) a)
+    (t b)
+  )
+)
+
+; maxForList(l1l2...ln) = 
+; = nil , if n = 0
+; = myMax(maxForList(l1), maxForList(l2...ln)) , if l1 is a list
+; = myMax(l1, maxForList(l2...ln)) , otherwise
+
+
+(defun maxForList(l)
+  (cond
+    ((null l) nil)
+    ((listp (car l)) (myMax (maxForList (car l)) (maxForList (cdr l))))
+    (t (myMax (car l) (maxForList (cdr l))))
+  )
+)
+
+
+; myAppend (l1l2...ln, p1p2...pm) = 
+; = p1p2...pm, if n = 0
+; = {l1} U myAppend(l2...ln, p1p2...pm) , otherwise
+
+(defun myAppend (l p)
+  (cond
+    ((null l) p)
+    (t (cons (car l) (myAppend (cdr l) p)))
+  )
+)
+
+
+; removeElem(l1l2...ln, elem) = 
+; = nil , if n = 0
+; = removeElem(l1, elem) U removeElem(l2...ln, elem) , if l1 is a list
+; = removeElem(l2...ln, elem) , if l1 = elem
+; = {l1} U removeElem(l2...ln, elem) , otherwise
+
+(defun removeElem(l elem)
+  (cond
+    ((null l) nil)
+    ((listp (car l)) (cons (removeElem (car l) elem) (removeElem (cdr l) elem)))
+    ((equal (car l) elem) (removeElem (cdr l) elem))
+    (t (cons (car l) (removeElem (cdr l) elem)))
+  )
+)
+
+
+(defun mainC (l)
+  (removeElem l (maxForList l))
+)
+
+;d) Write a function which returns the product of numerical even atoms from a list, to any level.
+
+
+; isEven(a) = 
+; = t , if a % 2 = 1
+; = nil (false) , otherwise
+
+
+(defun isEven (a)
+  (cond
+    ((equal 0 (mod a 2)) t)
+    (t nil)
+  )
+)
+
+; productEvenNumbers(l1l2...ln) = 
+; = 1, if n = 0
+; = productEvenNumbers(l1) * productEvenNumbers(l2...ln) , if l1 is a list
+; = l1 * productEvenNumbers(l2...ln) , if l1 is a number and is even
+; = productEvenNumbers(l2...ln) , otherwise
+
+
+(defun productEvenNumbers(l)
+  (cond
+    ((null l) 1)
+    ((listp (car l)) (* (productEvenNumbers (car l)) (productEvenNumbers (cdr l))))
+    ((and (numberp (car l)) (isEven (car l))) (* (car l) (productEvenNumbers (cdr l))))
+    (t (productEvenNumbers (cdr l)))
+  )
+)
+
+
+; First we check if we have any numbers in the list, if we have then we try to compute the product
+; Otherwise we simply return 0
+(defun mainD(l)
+  (cond
+    ((lookForNumbers l) (productEvenNumbers l))
+    (t 0)
+  )
+)

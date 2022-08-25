@@ -1,0 +1,79 @@
+% 11.
+% a. Replace all occurrences of an element from a list with another element e.
+
+% myReplace(l1l2...ln, elem, newElem) = 
+% = [], if n = 0
+% = {newElem} U myReplace(l2...ln, elem, newElem), if elem = l1
+% = {l1} U myReplace(l2...ln, elem, newElem), otherwise
+
+% myReplace(L:list, E:number, N:number, R:list)
+% (i,i,i,o)
+
+myReplace([],_,_,[]).
+myReplace([H|T],E,N,[N|R]):-
+    H=:=E,
+    !,
+    myReplace(T,E,N,R).
+myReplace([H|T],E,N,[H|R]):-
+    myReplace(T,E,N,R).
+
+% b. For a heterogeneous list, formed from integer numbers and list of numbers, 
+%    define a predicate to determine the maximum number of the list, and then
+%    to replace this value in sublists with the maximum value of sublist.
+% Eg.: [1, [2, 5, 7], 4, 5, [1, 4], 3, [1, 3, 5, 8, 5, 4], 5, [5, 9, 1], 2] =>
+% [1, [2, 7, 7], 4, 5, [1, 4], 3, [1, 3, 8, 8, 8, 4], 5, [9, 9, 1], 2]
+
+
+% myMax(a,b) = 
+% = a, if a >= b
+% = b, otherwise
+
+% myMax(A:number, B:number, R:number)
+% (i,i,o)
+
+myMax(A,B,A):-
+    A >= B.
+myMax(A,B,B):-
+    B > A.
+
+% findMax(l1l2...ln) = 
+% = l1, if n = 1 and l1 is a number
+% = -99999999, if n = 1 and l1 is not a number
+% = myMax(l1, findMax(l2...ln)), if l1 is a number
+% = findMax(l2...ln), otherwise
+
+% findMax(L:list, R:list)
+% (i,o)
+
+findMax([H],H):- number(H).
+findMax([_],-99999999).
+findMax([H|T],R):-
+    number(H),
+    !,
+    findMax(T,RM),
+    myMax(H,RM,R).
+findMax([_|T],R):-
+    findMax(T,R).
+
+
+% heterList(l1l2...ln, max) = 
+% = [], if n = 0
+% = myReplace(l1, max, findMax(l1)) U heterList(l2...ln, max), if l1 is a list
+% = {l1} U heterList(l2...ln, max), otherwise
+
+% heterList(L:list, M:number, R:list)
+% (i,i,o)
+
+heterList([],_,[]).
+heterList([H|T],M,[RR|R]):-
+    is_list(H),
+    !,
+    findMax(H,RM),
+    myReplace(H,M,RM,RR),
+    heterList(T,M,R).
+heterList([H|T],M,[H|R]):-
+    heterList(T,M,R).
+
+main(L,R):-
+    findMax(L,RM),
+    heterList(L,RM,R).

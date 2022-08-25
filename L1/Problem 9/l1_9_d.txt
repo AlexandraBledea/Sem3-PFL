@@ -1,0 +1,86 @@
+;With this function we compute the gcd of two numbers
+
+; myGCD(a b) = 
+; = nil , if a is not a number and b is not a number
+; = b , if a is not a numbe
+; = a , if b is not a number
+; = b , if a = 0
+; = myGCD(b%a, a) , otherwise
+
+(defun myGCD (a b)
+  (cond
+    ((and (not (numberp a)) (not (numberp b))) nil)
+    ((not (numberp a)) b)
+    ((not (numberp b)) a)
+    ((= a 0) b)
+    (t (myGCD (mod b a) a))
+  )
+)
+
+; With this function we check if in our list we have at least one number, so we return 1 is we have at least
+; a number and 0 otherwise
+
+; lookForNumbers(l1l2...ln) = 
+; = 0 , if n = 0
+; = 1 , if l1 is a number
+; = lookForNumbers(l2...ln) , otherwise
+
+(defun lookForNumbers (l)
+  (cond
+    ((null l) 0)
+    ((numberp (car l)) 1)
+    (t (lookForNumbers (cdr l)))
+  )
+)
+
+; With this function we compute the gcd for all the numbers from a list
+
+; gcdList(l1l2...ln) = 
+; = l1 , if n = 1 and l1 is an atom
+; = myGCD(gcdList(l1), (gcdList(l2...ln))) , if l1 is a list
+; = myGCD(l1 , gcdList(l2...ln)) , otherwise
+
+(defun gcdList (l)
+  (cond
+    ((and (atom (car l)) (null (cdr l))) (car l))
+    ((listp (car l)) (myGCD (gcdList (car l)) (gcdList (cdr l)) ) )
+    (t (myGCD (car l) (gcdList(cdr l)) ) )
+  )
+)
+
+; With this function first we check if we have in our list any numbers, if we don't we simply return 0
+; if we have at least a number, we call the function gcdList in order to find the gcd for all the elements
+; of a list
+
+; main(l1l2...ln) = 
+; = 0 , if lookForNumbers(l1l2...ln) = 0
+; = gcdList(l1l2...ln) , otherwise
+
+(defun main (l)
+  (cond
+    ((= (lookForNumbers l) 0) 0)
+    (t (gcdList l)) 
+  )
+)
+
+
+
+
+// this is the good function, the other one is not working on all the cases!!!!!!!!!!!
+; lookForNumbers(l1l2...ln, c) = 
+; = 0 , if n = 0 and c = 0
+; = 1 , if n = 0 and c > 0
+; = lookForNumbers(l2...ln, c + 1) , if l1 is a number
+; = lookForNumbers(l1, c) + lookForNumbers(l2...ln, c), if l1 is a list
+; = lookForNumbers(l2...ln, c) , otherwise
+
+
+(defun lookForNumbers(l c)
+  (cond
+    ((and (null l)(= c 0)) 0)
+    ((and (null l)(> c 0)) 1)
+    ((numberp (car l) ) (lookForNumbers (cdr l) (+ 1 c)))
+    ((listp (car l)) (+ (lookForNumbers (car l) c) (lookForNumbers (cdr l) c)))
+    (t (lookForNumbers (cdr l) c))
+  )
+)

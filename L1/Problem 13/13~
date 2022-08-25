@@ -1,0 +1,18 @@
+; a) A linear list is given. Eliminate from the list all elements from N to N steps, N-given.
+
+; removeFromNtoN(l1l2...ln, N, C1, C2) = 
+; = nil , if n = 0
+; = {l1} U removeFromNtoN(l2...ln, N, C1 + 1, C2), if C1 != N or C1 = C2 + 1= N
+; = removeFromNtoN(l2...ln, N, C1, C2 + 1), if C2 != N + 1 and C1 = N
+
+(defun removeFromNtoN(l n c1 c2)
+  (cond
+    ((null l) nil)
+    ((or (not (equal c1 n)) (and (equal c1 (+ 1 c2)) (equal (+ 1 c2) n))) (cons (car l) (removeFromNtoN (cdr l) n (+ c1 1) c2)))
+    ((and (not (equal c2 (+ 1 n))) (equal c1 n)) (removeFromNtoN (cdr l) n c1 (+ c2 1)))
+  )
+)
+
+(defun mainA(l n)
+  (removeFromNtoN l n 0 0)
+)

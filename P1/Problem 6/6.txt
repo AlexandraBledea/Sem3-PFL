@@ -1,0 +1,54 @@
+% a. Write a predicate to test if a list is a set.
+
+% count(l1l2...ln, elem) = 
+% = 0 , if n = 0
+% = 1 + count(l2...ln, elem), if l1 = elem
+% = count(l2...ln, elem), otherwise
+
+% count(L:list, E:number, R:number)
+% (i,i,o)
+
+count([],_,0).
+count([H|T],E,R1):-
+    H=:=E,
+    count(T,E,R),
+    R1 is R + 1.
+count([H|T],E,R):-
+    H=\=E,
+    count(T,E,R).
+
+% isSet(l1l2...ln) = 
+% = true, if n =0
+% = false, if count(l1l2...ln, l1) > 1
+% = isSet(l2...ln), otherwise
+
+% isSet(L:list)
+% (i)
+
+isSet([]).
+isSet([H|T]):-
+    count([H|T],H,R),
+    R=:=1,
+    isSet(T),!.
+    
+
+% b. Write a predicate to remove the first three occurrences of an element in a list.
+%  If the element occurs less than three times, all occurrences will be removed.
+
+
+% removeElem(l1l2l3...ln, elem, count) = 
+% = [], if n = 0 
+% = removeElem(l2...ln, elem, count - 1) , if l1 = elem and count > 0
+% = {l1} U removeElem(l2...ln, elem, count) , otherwise
+
+% removeElem(L:list,E:number,C:number,R:list)
+% (i,i,i,o)
+
+removeElem([],_,_,[]).
+removeElem([H|T],E,C,R):-
+    E=:=H,
+    C>0,
+    C1 is C - 1,
+    removeElem(T,E,C1,R),!.
+removeElem([H|T],E,C,[H|R]):-
+	removeElem(T,E,C,R).    

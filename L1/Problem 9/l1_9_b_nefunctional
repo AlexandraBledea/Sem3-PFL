@@ -1,0 +1,66 @@
+(defun add (thing lst) (append lst (list thing)))
+
+
+;Model matematic
+; concat-lists(l1l2...ln,k1k2...km) = 
+; = k1k2...km, if n = 0
+; = l1 U concat-lists(l2...ln,k1k2...km)
+
+(defun concat-lists (seq1 seq2)
+  (cond
+    ((null seq1) seq2)
+    (t (cons (car seq1) (concat-lists (cdr seq1) seq2)))
+  )
+)
+
+;Model matematic:
+;l = l1l2...ln
+;copy = c1c2...cm
+;e = elem
+;k = k1k2...kp
+;cl = p1p2...pk
+;r = r1r2...rl
+; my_replace(l, c, elem, k, cl, r, indicator) =
+; r, if n = 0 and m = 0 and k = 0
+; concat-lists(r, cl), if indicator = 0 and k != 0 and n = 0 and m = 0
+; my_replace(copy, (), elem, k,(), concat-lists(r, list(cl)), indicator - 1), if n = 0
+; my_replace(l1, concat-lists(copy,list(l2...ln)), elem, k, (), concat-lists(r,list(cl)),indicator + 1) , if indicator != 0 and l1 is a list
+; my_replace(l1, concat-lists(copy,l2...ln), elem, k, (), concat-lists(r, cl), indicator + 1), if indicator = 0 and l1 is a list
+; my_replace(l2...ln, copy, elem, k, concat-lists(cl, k), r, indicator) , if l1 = elem
+; my_replace(l2...ln, copy, elem, k, concat-lists(cl, (list l1)), r, indicator) , otherwise
+
+
+;l - lista initiala
+;copy - este o lista in care tin minte tail ul unei liste initiale in cazul in care intalnesc o sublista
+;e - elementul pe care cautam sa il schimbam
+;k - lista cu elementele pe care le vom pune in locul elemenului e
+;cl - reprezinta o lista in care construiesc pe parti bucati din lista initiala
+;   - adica de exemplu daca am (list 1 2 (list 2)) iar elementul pe care trebuie sa il inlocuiesc este 2 iar valorile cu care
+;     trebuie sa il inlocuiesc sunt (list 0 0), eu in cl voi adauga pe rand 1, dupa care 0 0, iar in momentul in care intalnesc
+;     acea sublista voi concatena rezultatul din cl la r, lista in care se va afla rezultatul final
+;r - reprezinta lista cu modificarile aferente facute
+;indicator - reprezinta un numar care ne arata cat de adanc am intrat in lista, adica daca ne aflam chiar la nivelul de baza
+;            fara sa fi intrat in vreo sublista el va fi 0, iar de fiecare daca cand intra in vreo sublista acesta este incrementat
+
+(defun my_replace(l copy e k cl r indicator)
+  (cond
+    ((and (null l)(null cl)(null copy)) r) ; reprezinta cazul de baza, unde pur si simplu returnam rezultatul final
+    ((and (= 0 indicator) (not (null cl))(null l) (null copy)) (concat-lists r cl)) ; daca am ajuns in acest caz inseamna ca ultimele elemente care trebuie sa fie adaugate la rezultat fac parte din lista de baza, deci trebuie sa concatenam cele doua liste
+    ((null l) (my_replace copy () e k () (concat-lists r (list cl))(- 1 indicator))) ; daca ajung in acest caz inseamna ca urmeaza sa ies dintr-o sublista
+                                                                      ; deci voi adauga lista cl la rezultat si voi decrementa indicatorul in apelul recursiv
+    ((and (/= 0 indicator) (listp (car l))) (my_replace (car l) (concat-lists copy (list (cdr l))) e k () (concat-lists r (list cl)) (+ 1 indicator))) 
+    ; daca ajung in acest caz inseamna ca ma aflu deja intr-o sublista in care am gasit alta sublista
+    ((and (= 0 indicator) (listp (car l))) (my_replace (car l) (concat-lists copy (cdr l)) e k () (concat-lists r cl) (+ 1 indicator)))
+    ; daca ajung in acest caz inseamna ca ma aflu la nivelul de baza in lista si am intalnit o alta sublista in care trebuie sa intru
+    ((equal (car l) e) (my_replace (cdr l) copy e k (concat-lists cl k) r indicator))
+    ; daca ajung in acest caz inseamna ca un element din lista este egal cu elementul pe care il caut si atunci la acea lista auxiliara cl voi adauga elementele din lista k
+    (t  (my_replace (cdr l) copy e k (concat-lists  cl (cons (car l) () )) r indicator))
+    ; daca ajung in acest caz inseamna ca nu am gasit elementul pe care il caut, asa ca la lista auxiliara pur si simplu adaug elementul gasit
+  )
+)
+
+
+;(my_replace (list 1 2 3 (list 2 2 (list 1)) 3 1 (list 3 3)) () 3 (list 0 0) () ())
+
+;(my_replace (list 1 2(list 2 3 3) 1 3 (list 1)) () 3 (list 0 0) () () 0 -> pe acest exemplu merge
+;(my_replace (list (list 2 (list 1))) () 3 (list 0 0) () () 0) -> "Stack overflow (deep)" 

@@ -1,0 +1,17 @@
+; 12. Write a function that substitutes an element through another one at all levels of a given list.
+
+
+; substitute(l1l2...ln, elem, newElem) = 
+; = nil, if n = 0
+; = {l1}, if l1 != elem
+; = {newElem}, if l1 = elem
+; = substitute(l1) U substitute(l2...ln)
+
+(defun substitute(l elem newElem)
+  (cond
+    ((null l) nil)
+    ((not (equal (car l) elem)) (car l))
+    ((equal (car l) elem) newElem)
+    (t (apply 'cons (mapcar #' (lambda (a) (substitute a elem newElem)))))
+  )
+) 

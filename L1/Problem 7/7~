@@ -1,0 +1,20 @@
+;a) Write a function to eliminate the n-th element of a linear list.
+
+; eliminateNthElem(l, n, pos) =
+; = nil , if n = 0
+; = eliminateNthElem(l, n, pos + 1), if  n = pos
+; = {l1} U eliminateNthElem(l, n, pos + 1), otherwise
+
+
+(defun eliminateNthElem(l n pos)
+  (cond
+    ((null l) nil)
+    ((equal n pos) (eliminateNthElem l n (+ 1 pos)))
+    (t (cons (car l) (eliminateNthElem l n (+ 1 pos))))
+  )
+)
+
+
+(defun main(l n)
+  (eliminateNthElem l n 0)
+)

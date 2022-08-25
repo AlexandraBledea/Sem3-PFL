@@ -1,0 +1,53 @@
+; a) Write twice the n-th element of a linear list. Example: for (10 20 30 40 50) and n=3 will produce (10
+;    20 30 30 40 50).
+
+
+; twiceNthElem(l1l2...lm, n, pos) = 
+; = nil , if m = 0
+; = {l1} U {l1} U twiceNthElem(l2...lm, n, pos + 1) , if n = pos
+; = {l1} U twiceNthElem(l2...lm, n, pos + 1) , otherwise
+
+
+(defun twiceNthElem(l n pos)
+  (cond
+    ((null l) nil)
+    ((equal n pos) (cons (car l) (cons (car l) (twiceNthElem (cdr l) n (+ 1 pos)))))
+    (t (cons (car l) (twiceNthElem (cdr l) n (+ 1 pos))))
+  )
+)
+
+(defun mainA(l n)
+  (twiceNthElem l n 0)
+)
+
+; b) Write a function to return an association list with the two lists given as parameters.
+;    Example: (A B C) (X Y Z) --> ((A.X) (B.Y) (C.Z)).
+
+
+; myAppend(l1l2...ln, p1p2...pm) = 
+; = p1p2...pm, if n = 0
+; = {l1} U myAppend(l2...ln, p1p2...pm), otherwise
+
+(defun myAppend(l p)
+  (cond
+    ((null l) p)
+    (t (cons (car l) (myAppend (cdr l) p)))
+  )
+)
+
+; association(l1l2...ln, p1p2...pm) = 
+; = nil, if n = 0 and m = 0
+; = myAppend(association(nil, p2...pm), list({nil} U {p1})), if n = 0
+; = myAppend(association(l2...ln, nil), list({l1} u {nil})), if m = 0
+; = myAppend(association(l2...ln, p2...pm), list({l1} U {p1})), otherwise
+
+
+(defun association(l p)
+  (cond
+    ((and (null l) (null p)) nil)
+    ((null l) (myAppend (association nil (cdr p)) (list (cons nil (car p)))))
+    ((null p) (myAppend (association (cdr l) nil) (list (cons (car l) nil))))
+    (t (myAppend (association (cdr l) (cdr p)) (list (cons (car l) (car p)))))
+  )
+)
+

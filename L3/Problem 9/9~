@@ -1,0 +1,16 @@
+; 9. Write a function that removes all occurrences of an atom from any level of a list.
+
+
+; removeElem(l, elem) = 
+; = l , if l is an atom and l != elem
+; = nil, if l is an atom and l = elem
+; = removeElem(l1, elem) U removeElem(l2, elem) U ... U removeElem(ln, elem) , otherwise
+
+
+(defun removeElem(l elem)
+  (cond
+    ((and (atom l) (equal l elem)) nil)
+    ((atom l) l)
+    (t (mapcar #' (lambda (a) (removeElem a elem)) l))
+  )
+)

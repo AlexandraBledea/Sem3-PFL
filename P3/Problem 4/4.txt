@@ -1,0 +1,47 @@
+% 4. The list a1... an is given. Write a predicate to determine all sublists strictly ascending of this list a.
+
+% subset(l1l2...ln) = 
+% = [], if n = 0
+% = {l1} U subset(l2...ln), if n >= 1
+% = subset(l2...ln), if n >= 1 
+
+% subset(L:list, R:list)
+% (i,o)
+
+subset([],[]).
+subset([H|T],[H|R]):-
+    subset(T,R).
+subset([_|T],R):-
+    subset(T,R).
+
+% ascending(l1l2...ln) = 
+% = true, if n = 1
+% = false, if l2 < l1
+% = ascending(l2...ln)
+
+% ascending(L:list)
+% (i)
+
+ascending([_]).
+ascending([H1,H2|T]):-
+    H1 < H2,
+    ascending([H2|T]).
+
+
+% process(l1l2...ln) = 
+% = [], if n = 0
+% = subset(l1l2...ln), ascending(l1l2...ln).
+
+% process(L:list, R:list)
+%(i,o)
+
+process([],[]).
+process(L,R):-
+    subset(L,R),
+    ascending(R).
+
+% allSolutions(L:list, R:list)
+% (i,o)
+
+allSolutions(L,R):-
+    findall(RPartial,process(L,RPartial),R).

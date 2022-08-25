@@ -1,0 +1,118 @@
+; a) A linear list is given. Eliminate from the list all elements from N to N steps, N-given.
+
+; ----Here is solved the problem with the wrong understanding!!!
+; removeFromNtoN(l1l2...ln, N, C1, C2) = 
+; = nil , if n = 0
+; = {l1} U removeFromNtoN(l2...ln, N, C1 + 1, C2), if C1 != N or C1 = C2 + 1= N
+; = removeFromNtoN(l2...ln, N, C1, C2 + 1), if C2 != N + 1 and C1 = N
+
+;(defun removeFromNtoN(l n c1 c2)
+;  (cond
+;    ((null l) nil)
+;    ((or (not (equal c1 n)) (and (equal c1 (+ 1 c2)) (equal (+ 1 c2) n))) (cons (car l) (removeFromNtoN (cdr l) n (+ c1 1) c2)))
+;    ((and (not (equal c2 (+ 1 n))) (equal c1 n)) (removeFromNtoN (cdr l) n c1 (+ c2 1)))
+;  )
+;)
+
+;(defun mainA(l n)
+;  (removeFromNtoN l n 0 0)
+;)
+
+
+
+; removeFromNtoN(l1l2...ln, n, k) = 
+; = nil, if n = 0 
+; = removeFromNtoN(l2...ln, n, n), if k = 1
+; = {l1} U removeFromNtoN(l2...ln, n, k - 1) , otherwise
+
+(defun removeFromNtoN(l n k)
+  (cond 
+    ((null l) nil)
+    ((equal k 1) (removeFromNtoN (cdr l) n n))
+    (t (cons (car l) (removeFromNtoN (cdr l) n (- k 1))))
+  )
+)
+
+(defun mainA(l n)
+  (removeFromNtoN l n n)
+)
+
+
+; b) Write a function to test if a linear list of integer numbers has a "valley" aspect (a list has a valley
+;    aspect if the items decrease to a certain point and then increase. Eg. 10 8 6 17 19 20). A list must have
+;    at least 3 elements to fullfill this condition.
+
+
+; findLength(l1l2...ln) = 
+; = 0 , if n = 0
+; = 1 + findLength(l2...ln) , otherwise
+
+(defun findLength(l)
+  (cond
+    ((null l) 0)
+    (t (+ 1 (findLength (cdr l))))
+  )
+)
+
+
+; valley(l1l2...ln, decreasing) = 
+; = nil (false), if n = 1 and decreasing = true
+; = true , if n = 1 and decreasing = false
+; = nil (false) , if l1 > l2 and decreasing = false
+; = valley(l2...ln, false), if l1 < l2 and decreasing = true
+; = valley(l2...ln, decreasing), otherwise
+
+(defun valley (l decreasing)
+	(cond
+		((= (findLength l) 1) (if decreasing nil T))
+		((and (> (car l) (cadr l)) (not decreasing)) nil)
+		((and (< (car l) (cadr l)) decreasing) (valley (cdr l) nil))
+		(T (valley (cdr l) decreasing))
+	)
+)
+
+(defun mainB(l)
+  (cond
+    ((null l) nil)
+    ((null (cadr l)) nil)
+    ((null (caddr l)) nil)
+    ((< (car l) (cadr l)) nil)
+    (t (valley l T))
+  )
+)
+
+
+;c) Build a function that returns the minimum numeric atom from a list, at any level.
+
+; myMin(a, b) = 
+; = nil , if a is not a number and b is not a numbe
+; = a , if b is not a numbe
+; = b , if a is not a number
+; = a , if a < b
+; = b , otherwise
+
+(defun myMin(a b)
+  (cond
+    ((and (not (numberp a)) (not (numberp b))) nil)
+    ((not (numberp a)) b)
+    ((not (numberp b)) a)
+    ((< a b) a)
+    (t b)
+  )
+)
+
+
+; findMin(l1l2...ln) = 
+; = l1 , if n = 1 and l1 is an atom
+; = myMin(findMin(l1), findMin(l2...ln)) , if l1 is a list
+; = myMin(l1, findMin(l2...ln)) , otherwise
+
+
+(defun findMin(l)
+  (cond
+    ((and (null (cdr l)) (atom (car l))) (car l))
+    ((listp (car l)) (myMin (findMin (car l)) (findMin (cdr l))))
+    (t (myMin (car l) (findMin (cdr l))))
+  )
+)
+

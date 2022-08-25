@@ -1,0 +1,89 @@
+; a) Write twice the n-th element of a linear list. Example: for (10 20 30 40 50) and n=3 will produce (10
+;    20 30 30 40 50).
+
+
+; twiceNthElem(l1l2...lm, n, pos) = 
+; = nil , if m = 0
+; = {l1} U {l1} U twiceNthElem(l2...lm, n, pos + 1) , if n = pos
+; = {l1} U twiceNthElem(l2...lm, n, pos + 1) , otherwise
+
+
+(defun twiceNthElem(l n pos)
+  (cond
+    ((null l) nil)
+    ((equal n pos) (cons (car l) (cons (car l) (twiceNthElem (cdr l) n (+ 1 pos)))))
+    (t (cons (car l) (twiceNthElem (cdr l) n (+ 1 pos))))
+  )
+)
+
+(defun mainA(l n)
+  (twiceNthElem l n 0)
+)
+
+; b) Write a function to return an association list with the two lists given as parameters.
+;    Example: (A B C) (X Y Z) --> ((A.X) (B.Y) (C.Z)).
+
+
+; myAppend(l1l2...ln, p1p2...pm) = 
+; = p1p2...pm, if n = 0
+; = {l1} U myAppend(l2...ln, p1p2...pm), otherwise
+
+(defun myAppend(l p)
+  (cond
+    ((null l) p)
+    (t (cons (car l) (myAppend (cdr l) p)))
+  )
+)
+
+; association(l1l2...ln, p1p2...pm) = 
+; = nil, if n = 0 and m = 0
+; = myAppend(association(nil, p2...pm), list({nil} U {p1})), if n = 0
+; = myAppend(association(l2...ln, nil), list({l1} u {nil})), if m = 0
+; = myAppend(association(l2...ln, p2...pm), list({l1} U {p1})), otherwise
+
+
+(defun association(l p)
+  (cond
+    ((and (null l) (null p)) nil)
+    ((null l) (myAppend (list (cons nil (car p))) (association nil (cdr p) )))
+    ((null p) (myAppend (list (cons (car l) nil)) (association (cdr l) nil )))
+    (t (myAppend (list (cons (car l) (car p))) (association (cdr l) (cdr p) )))
+  )
+)
+
+
+; c) Write a function to determine the number of all sublists of a given list, on any level.
+;    A sublist is either the list itself, or any element that is a list, at any level. Example:
+;    (1 2 (3 (4 5) (6 7)) 8 (9 10)) => 5 lists:
+;    (list itself, (3 ...), (4 5), (6 7), (9 10))
+
+
+; countLists(l1l2...ln) =
+; = 0 , if n = 0
+; = 1 + countLists(l1) + countLists(l2...ln) , if l1 is a list
+; = countLists(l2...ln) , otherwise
+
+(defun countLists(l)
+  (cond
+    ((null l) 1)
+    ((listp (car l)) (+ (countLists (car l)) (countLists (cdr l))))
+    (t (countLists (cdr l)))
+  )
+)
+
+
+;d) Write a function to return the number of all numerical atoms in a list at superficial level.
+
+
+; getAllNumericalAtoms(l1l2...ln) = 
+; = 0 , if n = 0
+; = 1 + getAllNumbericalAtoms(l2...ln) , if l1 is a number
+; = getAllNumericalAtoms(l2...ln) , otherwise
+
+(defun getAllNumericalAtoms (l)
+  (cond
+    ((null l) 0)
+    ((numberp (car l)) (+ 1 (getAllNumericalAtoms (cdr l))))
+    (t (getAllNumericalAtoms (cdr l)))
+  )
+)

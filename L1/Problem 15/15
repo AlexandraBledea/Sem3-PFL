@@ -1,0 +1,71 @@
+; a) Write a function to insert an element E on the n-th position of a linear list.
+
+; insertAtPos(l1l2...ln, pos, elem) = 
+; = nil, if n = 0
+; = {elem} U l1l2...ln, if pos = 0
+; = {l1} U insertAtPos(l2...ln, pos - 1, elem) , otherwise
+
+(defun insertAtPos(l pos elem)
+  (cond
+    ((null l) nil)
+    ((equal pos 0 ) (cons elem l))
+    (t (cons (car l) (insertAtPos (cdr l) (- pos 1) elem)))
+  )
+)
+
+; c) Write a function to return the set of all sublists of a given linear list. Ex. For list ((1 2 3) ((4 5) 6)) =>
+; ((1 2 3) (4 5) ((4 5) 6))
+
+; myAppend(l1l2...ln, p1p2...pm) = 
+; = p1p2...pm, if n = 0
+; = {l1} U myAppend(l2...ln, p1p2...pm) , otherwise
+
+(defun myAppend (l p)
+  (cond
+    ((null l) p)
+    (t (cons (car l) (myAppend (cdr l) p)))
+  )
+)
+
+; sublists(l1l2...ln) = 
+; = nil, if n = 0
+; = myAppend(list(l1), myAppend(sublists(l1), sublists(l2...ln))), if l1 is a list
+; = sublists(l2...ln), otherwise
+
+(defun sublists (l) 
+    (cond
+        ((null l) nil)
+        ((listp (car l)) (myAppend (list (car l)) (myAppend (sublists (car l)) (sublists (cdr l)))))
+        (t (sublists (cdr l)))
+    )
+)
+
+; d) Write a function to test the equality of two sets, without using the difference of two sets.
+
+; removeFirstOcc(l1l2...ln, elem) = 
+; = nil, if n = 0
+; = l2...ln, if elem = l1
+; = {l1] U removeFirstOcc(l2...ln, elem), otherwise
+
+
+(defun removeFirstOcc(l elem)
+  (cond
+    ((null l) nil)
+    ((equal elem (car l)) (cdr l))
+    (t (cons (car l) (removeFirstOcc (cdr l) elem)))
+  )
+)
+
+; equalitySets(l1l2...ln, p1p2...pm) = 
+; = true, if n = 0 and m = 0
+; = false, if n = 0 or m = 0
+; = equalitySets(l2...ln, removeFirstOcc(p1p2...pm, l1)), otherwise
+
+(defun equalitySets(l p)
+  (cond
+    ((and (null l) (null p)) T)
+    ((or (null l) (null p)) nil)
+    (t (equalitySets (cdr l) (removeFirstOcc p (car l))))
+  )
+)
+

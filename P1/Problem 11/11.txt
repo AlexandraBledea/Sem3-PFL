@@ -1,0 +1,44 @@
+% 11.
+% a. Write a predicate to substitute an element from a list with another element in the list.
+% 
+% Model matematic:
+% substituteElem(l1...ln, e1, e2) =
+% = [], n = 0
+% = {e2} U substituteElem(l2...ln, e1, e2), if l1 = e1
+% = {l1} U substituteElem(l2...ln, e1, e2), otherwise
+
+% substituteElem(L:list, E1:number, E2:number, R:list)
+% (i,i,i,o)
+
+substituteElem([],_,_,[]).
+substituteElem([H|T],E1,E2,[E2|R]):-
+    H=:=E1,
+    substituteElem(T,E1,E2,R).
+substituteElem([H|T],E1,E2,[H|R]):-
+    H=\=E1,
+    substituteElem(T,E1,E2,R).
+
+% b. Write a predicate to create the sublist (lm, …, ln) from the list (l1,…, lk).
+
+% sublist(l1l2...lk, m, n, pos) = 
+% = [] , if pos > n
+% = {l1} U sublist(l2...lk, m, n, pos + 1), if pos >= m and pos <= n
+% = sublist(l2...k, m, n, pos + 1), otherwise
+
+% sublist(L:list, M:number, N:number, P:number, R:list)
+% (i,i,i,i,o)
+
+sublist(_,_,N,P,[]):-
+    P>N,!.
+sublist([H|T],M,N,P,[H|R]):-
+    P >= M,
+    P =< N,
+    P1 is P + 1,
+    sublist(T,M,N,P1,R),!.
+sublist([_|T],M,N,P,R):-
+    P1 is P + 1,
+    sublist(T,M,N,P1,R).
+
+
+mainS(L,M,N,R):-
+    sublist(L,M,N,0,R).

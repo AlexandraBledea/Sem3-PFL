@@ -1,0 +1,48 @@
+% a. Define a predicate to test if a list of an integer elements has a "valley" aspect
+%    (a set has a "valley" aspect if elements decreases up to a certain point, and then increases.
+%    eg: 10 8 6 9 11 13 – has a “valley” aspect
+
+% f = 1 -> decreasing sequence
+% f = 0 -> increasing sequence
+ 
+% valley(l1l2...ln, f)= 
+% = true, if n = 1 and f = 0
+% = valley(l2...ln, 1) , if l1 > l2 and f = 1
+% = valley(l2...ln, 0), if l1 < l2 and (f = 0 or f = 1)
+
+% valley(L:list, F:number)
+% (i,i)
+
+valley([_],0):-!.
+valley([H1,H2|T],F):-
+    H1 > H2,
+    F =:= 1,
+    valley([H2|T],1).
+valley([H1,H2|T],_):-
+    H1<H2,
+    valley([H2|T],0).
+
+mainV(L):-
+    L=[H1,H2|_],
+    H1>H2,
+    valley(L,1).
+    
+% b. Calculate the alternate sum of list’s elements (l1 - l2 + l3 ...).
+
+% b
+
+% Model matematic:
+% alternativeSum(l1...ln) =
+% = 0, if n = 0
+% = l1, if n = 1
+% = l1 - l2 + alternativeSum(l3...ln) , otherwise
+
+% alternativeSum(L:list, R:number)
+% (i,o)
+
+alternativeSum([],0).
+alternativeSum([H],H).
+alternativeSum([H1,H2|T],R2):-
+    alternativeSum(T,R),
+    R1 is H1 - H2,
+    R2 is R1 + R.

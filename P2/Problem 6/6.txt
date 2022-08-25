@@ -1,0 +1,152 @@
+% 6.
+% a. Determine the product of a number represented as digits in a list to a given digit.
+%    Eg.: [1 9 3 5 9 9] * 2 => [3 8 7 1 9 8]
+
+% myAppend(l1l2...ln, elem) = 
+% = [elem], if n = 0
+% = {l1} U myAppend(l2...ln, elem), otherwise
+
+% myAppend(L:list, E:number, R:list)
+% (i,i,o)
+
+myAppend([],E,[E]).
+myAppend([H|T],E,[H|R]):-
+    myAppend(T,E,R).
+
+% myReverse(l1l2...ln) = 
+% = [], if n = 0
+% = myAppend(myReverse(l2...ln), l1), otherwise
+
+% myReverse(L:list, R:list)
+% (i,o)
+
+myReverse([],[]).
+myReverse([H|T], R):-
+    myReverse(T, R1),
+    myAppend(R1, H, R).
+
+% myCarry(a,b,c) = 
+% = (a * b + c -(a * b + c) mod 10)/10, if a * b + c > 9
+% = 0, otherwise
+
+% myCarry(A:number, B:number, C:number, R:number)
+% (i,i,i,o)
+
+
+myCarry(A,B,C,R):-
+    AB is A * B,
+    ABC is AB + C,
+    ABC > 9,
+    ABC1 is ABC mod 10,
+    R is (ABC - ABC1) / 10,
+    !.
+myCarry(_,_,_,0).
+
+
+% myDigit(a,b,c) = 
+% = (a * b + c) mod 10, if a * b + c > 9
+% = a * b + c, otherwise
+
+% myDigit(A:number, B:number, C:number, R:number)
+% (i,i,i,o)
+
+myDigit(A,B,C,R):-
+    AB is A * B,
+    ABC is AB + C,
+    ABC > 9,
+    R is ABC mod 10.
+myDigit(A,B,C,R):-
+    AB is A * B,
+    ABC is AB + C,
+    ABC =< 9,
+    R is ABC.
+
+% myProduct(l1l2...ln, nr, carry) = 
+% = [], if n = 0 and carry = 0
+% = [carry], if n = 0 and carry = 1
+% = myDigit(l1, nr, myCarry(l1, nr, carry)) U myProduct(l2...ln, nr), otherwise  
+
+% myProduct(L:list, NR:number, C:number, R:list)
+% (i,i,i,o)
+
+myProduct([],_,0,[]):-!.
+myProduct([],_,C,[C]).
+myProduct([H|T],NR,C,[RD|R]):-
+    myDigit(H,NR,C,RD),
+    myCarry(H,NR,C,RC),
+    myProduct(T,NR,RC,R).
+
+main(L,E,R):-
+    myReverse(L,R1),
+    myProduct(R1,E,0,R2),
+    myReverse(R2,R).
+
+% b. For a heterogeneous list, formed from integer numbers and list of numbers, write a predicate to replace
+%    every sublist with the position of the maximum element from that sublist.
+%    [1, [2, 3], [4, 1, 4], 3, 6, [7, 10, 1, 3, 9], 5, [1, 1, 1], 7] =>
+%    [1, [2], [1, 3], 3, 6, [2], 5, [1, 2, 3], 7]
+
+% maxNumber(a,b) = 
+% = a, if a >=b
+% = b, otherwise
+
+maxNumber(A, B, A) :- A >= B.
+maxNumber(A, B, B) :- A < B.
+
+% findMax(l1l2...ln) = 
+% = l1, if n = 1
+% = maxNumber(l1, findMax(l2...ln)), otherwise
+
+% findMax(L:list, R:number)
+% (i,o)
+
+findMax([H],H).
+findMax([H|T],R):-
+    findMax(T,RM),
+    maxNumber(H,RM,R).
+
+
+% findPosMax(l1l2...ln, elem, pos) = 
+% = [], if n = 0
+% = {pos} U findPosMax(l2...ln, elem, pos + 1), if l1 = elem
+% = findPosMax(l2...ln, elem, pos + 1), otherwisw
+
+% findPosMax(L:list, E:number, P:number, R:list)
+% (i,i,i,o)
+
+findPosMax([],_,_,[]).
+findPosMax([H|T],E,P,[P|R]):-
+    H =:= E,
+    P1 is P + 1,
+    findPosMax(T,E,P1,R).
+findPosMax([H|T],E,P,R):-
+    H =\= E,
+    P1 is P + 1,
+    findPosMax(T,E,P1,R).
+
+mainMax(L,R):-
+    findMax(L,R1),
+    findPosMax(L,R1,1,R).
+
+
+% heterList(l1l2...ln) = 
+% = [], if n = 0
+% = mainMax(l1) U heterList(l2...ln), if l1 is a list
+% = {l1} U heterList(l2...ln), otherwise
+
+% heterList(L:list, R:list)
+% (i,o)
+
+heterList([],[]).
+heterList([H|T],[RM| R]):-
+    is_list(H),
+    !,
+    mainMax(H,RM),
+    heterList(T,R).
+heterList([H|T], [H|R]):-
+    heterList(T,R).
+
+
+% heterList([1, [2, 3], [4, 1, 4], 3, 6, [7, 10, 1, 3, 9], 5, [1, 1, 1], 7], R).
+% [1, [2], [1, 3], 3, 6, [2], 5, [1, 2, 3], 7]
+

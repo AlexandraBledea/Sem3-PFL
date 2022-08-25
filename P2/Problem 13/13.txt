@@ -1,0 +1,57 @@
+% 13.
+% a. Given a linear numerical list write a predicate to remove all sequences of
+%    consecutive values.
+% Eg.: remove([1, 2, 4, 6, 7, 8, 10], L) will produce L=[4, 10].
+
+% Model matematic:
+% removeConsecutive(l1...ln) =
+% = l1...ln, n <= 1
+% = [], n = 2 and l2 = l1 + 1
+% = removeConsecutive(l2...ln), l2 = l1 + 1 and l3 = l2 + 1
+% = removeConsecutive(l3...ln), l2 = l1 + 1 and l3 != l2 + 1
+% =	{l1} U removeConsecutive(l2...ln), l2 != l1 + 1
+
+% removeConsecutive(L:list, R:list)
+% (i, o)
+
+removeConsecutive([],[]).
+removeConsecutive([H],[H]).
+removeConsecutive([H1,H2],[]):- H2 =:= H1 + 1.
+removeConsecutive([H1,H2,H3|T],R):-
+    H2 =:= H1 + 1,
+    H3 =:= H2 + 1,
+    !,
+    removeConsecutive([H2,H3|T],R).
+removeConsecutive([H1,H2,H3|T],R):-
+    H2 =:= H1 + 1,
+    H3 =\= H2 + 1,
+    !,
+    removeConsecutive([H3|T],R).
+removeConsecutive([H1,H2|T],[H1|R]):-
+   	H2 =\= H1 + 1,
+    removeConsecutive([H2|T],R).
+
+
+% b. For a heterogeneous list, formed from integer numbers and list of numbers;
+%    write a predicate to delete from every sublist all sequences
+%    of consecutive values.
+% Eg.: [1, [2, 3, 5], 9, [1, 2, 4, 3, 4, 5, 7, 9], 11, [5, 8, 2], 7] =>
+% [1, [5], 9, [4, 7, 9], 11, [5, 8, 2], 7]
+
+
+% heterList(l1l2...ln) = 
+% = [], if n = 0
+% = removeConsecutive(l1) U heterList(l2...ln), if is_list(l1) = true
+% = {l1} U heterList(l2...ln), otherwise
+
+% heterList(L:list, R:list)
+% (i,o)
+
+heterList([],[]).
+heterList([H|T],[RD|R]):-
+    is_list(H),
+    !,
+    removeConsecutive(H,RD),
+    heterList(T,R).
+heterList([H|T], [H|R]):-
+    heterList(T,R).

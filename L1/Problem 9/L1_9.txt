@@ -1,0 +1,211 @@
+;a) Write a function that merges two sorted linear lists and keeps double values.
+;Mathematical model
+;mymerge(l1l2...ln,k1k2...km)=
+;{ k1k2...km, if n = 0
+;{ l1l2...ln, if m = 0
+;{ l1 U mymerge(l2...ln, k1k2...km) , if l1 <= k1
+;{ k1 U mymerge(l1l2...ln, k2...km) , if k1 < l1 (otherwise case)
+
+(defun mymerge(l k)
+  (cond
+    ((null l) k)
+    ((null k) l)
+    ((<=(car l)(car k)) (cons (car l) (mymerge (cdr l) k) ))
+    (t (cons (car k) (mymerge l (cdr k))))
+  )
+)
+
+
+;b)Write a function to replace an element E by all elements of a list L1 at all levels of a given list L. 
+
+
+;myAppend(l1l2...ln,k1k2...km) = 
+; k1k2...km, if n = 0
+; l1 U myAppend(l2...ln, k1k2...km), otherwise
+
+(defun myAppend (L1 L2)
+  (cond
+    ((null L1) L2)
+    (T (cons (car L1) (myAppend (cdr L1) L2)))
+  )
+)
+
+
+;replaceList (E, R, l1l2..ln) = {
+; (), if n = 0
+; {replace(E, R, l1)} U replace(E, R, l2..ln), if l1 is a list
+; R U replace(E, R, l2..ln), if E = l1
+; {l1} U replace(E, R, l2..ln), otherwise
+
+(defun replaceList (E R L)
+    (cond
+        ((null L) ())
+        ((listp (car L)) (cons (replaceList E R (car L)) (replaceList E R (cdr L))))
+        ((equal E (car L)) (myAppend R (replaceList E R (cdr L))))
+        (t (cons (car L) (replaceList E R (cdr L))))
+    )
+)
+
+
+; (replaceList 3 (list ) (list 3 (list 3 4) (list 3) (list 1 3 4 (list 5 3 3) (list 4 5 6))))
+; (replaceList 1 (list 5 6 7) (list 1 (list 2 2 (list 1 (list 5 1))) (list 1 3 4 5)))
+
+;c)  Write  a  function  to  determines  the  sum  of  two  numbers  in  list  representation,
+;    and  returns  the corresponding  decimal  number,  without  transforming  the  representation
+;    of  the  number  from  list  to number.
+
+
+; myAppend(l1l2...ln, k1k2...km) = 
+; = k1k2...km, if n = 0
+; = l1 U myAppend(l2...ln, k1k2...km), otherwise
+
+(defun myAppend (L1 L2)
+  (cond
+    ((null L1) L2)
+    (T (cons (car L1) (myAppend (cdr L1) L2)))
+  )
+)
+
+
+; myReverse(l1l2...ln) = 
+; = (), if n = 0
+; = myAppend( myReverse(l2...ln), list (myReverse(l1)))  , if l1 is a list
+; = myAppend( myReverse(l2...ln), list(l1)), otherwise
+
+
+(defun myReverse (l)
+    (cond
+        ((null l) nil)
+        ((listp (car l)) (myAppend (myReverse (cdr l)) (list (myReverse (car l)))))
+        (T (myAppend (myReverse (cdr l)) (list (car l))))
+    )
+)
+
+; carry(e1, e2, c) = 
+; = 1, if e1 + e2 + c > 9
+; = 0, otherwise
+
+(defun carry (e1 e2 c)
+  (cond
+    ((< 9 (+ c(+ e1 e2))) 1)
+    (t 0)
+  )
+)
+
+
+; digit(e1, e2, c) = 
+; = e1 + e2 + c mod 10, if e1 + e2 + c > 9
+; = e1 + e2 + c, otherwise
+
+(defun digit (e1 e2 c)
+  (cond
+    ((< 9 (+ c(+ e1 e2))) (mod (+ c(+ e1 e2)) 10))
+    (t (+ c (+ e1 e2)))
+  )
+) 
+    
+; sumLists(l1l2...ln, k1k2...km, c, r) = 
+; = r , if n = 0 and m = 0 and c = 0
+; = {c} U r , if n = 0 and m = 0 and c != 0
+; = sumLists(l2...ln, k, carry(l1, 0, c), {digit(l1, 0, c)} U r) , if m = 0
+; = sumLists(l, k2...km, carry(0, k1, c), {digit(0, k1, c)} U r) , if n = 0
+; = sumLists(l2...ln, k2...km, carry(l1, k1, c), {digit(l1, k1, c)} U r) , otherwise
+
+
+(defun sumLists (l k c r)
+  (cond
+    ((and (null l)(null k)(= 0 c)) r)
+    ; if we reach this case it means both lists are empty,
+    ; we no longer have a cary, so we simply return the result
+    ((and (null l)(null k)(/= 0 c)) (cons c r))
+    ; if we reach this case it means both lists are empty, but we still have a carry so which means
+    ; we need to add the carry to the result ( for example we had the numbers 9 and 1
+    ; after we add them we obtain both lists empty, in the result we have a 0, but we
+    ; still neet to add that 1
+    ((null k) (sumLists (cdr l) k (carry (car l) 0 c) (cons (digit (car l) 0 c) r)))
+    ; if we reach this case, it means the second number doesn't have digits anymore
+    ; so we simply add the rest of the digits of the first number to the result
+    ((null l) (sumLists l (cdr k) (carry 0 (car k) c) (cons (digit 0 (car k) c) r)))
+    ; if we reach this case, it means the first number doesn't have digits anymote
+    ; so we simply add the rest of the digits of the second number to the result
+    (t (sumLists (cdr l) (cdr k) (carry (car l) (car k) c) (cons (digit (car l) (car k) c) r)))
+    ; if we reach this case, it means both numbers still have digits so we add them in order to compute the result
+  )
+) 
+
+(defun main (l k)
+  (cond
+    (t (sumLists (myReverse l) (myReverse k) 0 ()))
+  )
+)
+
+
+;With this function we compute the gcd of two numbers
+
+; myGCD(a b) = 
+; = nil , if a is not a number and b is not a number
+; = b , if a is not a number
+; = a , if b is not a number
+; = b , if a = 0
+; = myGCD(b%a, a) , otherwise
+
+(defun myGCD (a b)
+  (cond
+    ((and (not (numberp a)) (not (numberp b))) nil)
+    ((not (numberp a)) b)
+    ((not (numberp b)) a)
+    ((= a 0) b)
+    (t (myGCD (mod b a) a))
+  )
+)
+
+; With this function we check if in our list we have at least one number, so we return a number greater than 0
+; if we have at least a number and 0 otherwise
+
+; lookForNumbers(l1l2...ln) = 
+; = 0 , if n = 0
+; = 1 , if l1 is a number
+; = lookForNumbers(l1) + lookForNumbers(l2...ln) , if l1 is a list
+; = lookForNumbers(l2...ln) , otherwise
+
+(defun lookForNumbers (l)
+  (cond
+    ((null l) 0)
+    ((numberp (car l)) 1)
+    ((listp (car l)) (+ (lookForNumbers (car l)) (lookForNumbers (cdr l))))
+    (t (lookForNumbers (cdr l)))
+  )
+)
+
+; With this function we compute the gcd for all the numbers from a list
+
+; gcdList(l1l2...ln) = 
+; = l1 , if n = 1 and l1 is an atom
+; = myGCD(gcdList(l1), (gcdList(l2...ln))) , if l1 is a list
+; = myGCD(l1 , gcdList(l2...ln)) , otherwise
+
+(defun gcdList (l)
+  (cond
+    ((and (atom (car l)) (null (cdr l))) (car l))
+    ((listp (car l)) (myGCD (gcdList (car l)) (gcdList (cdr l)) ) )
+    (t (myGCD (car l) (gcdList(cdr l)) ) )
+  )
+)
+
+; With this function first we check if we have in our list any numbers, if we don't we simply return 0
+; if we have at least a number, we call the function gcdList in order to find the gcd for all the elements
+; of a list
+
+; main(l1l2...ln) = 
+; = 0 , if lookForNumbers(l1l2...ln) = 0
+; = gcdList(l1l2...ln) , otherwise
+
+(defun mainD (l)
+  (cond
+    ((= (lookForNumbers l) 0) 0)
+    (t (gcdList l)) 
+  )
+)
+
+
+; (mainD (list 1000 200 (list "A" ) (list 500) (list 300 (list 20 360 "A")) (list "A")))

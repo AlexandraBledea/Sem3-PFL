@@ -1,0 +1,36 @@
+% 3. Write a predicate to determine all decomposition of n (n given, positive), as sum of consecutive natural numbers.
+
+% oneSolution(s, n) = 
+% = [], if s = 0
+% = n + oneSolution(s - n , n + 1), otherwise
+
+% oneSolution(S:number, N:number, R:list)
+% (i,i,o)
+
+oneSolution(0,_,[]).
+oneSolution(S,N,[N|R]):-
+    S >= N,
+    NS is S - N,
+    NN is N + 1,
+    oneSolution(NS,NN,R).
+    
+% decomposition(s, n) = 
+% = oneSolution(s, n), if n < s
+% = decomposition(s, n + 1), if n < s
+
+% decomposition(S:number, N:number, R:list)
+% (i,i,o)
+
+decomposition(S,N,R):-
+    N < S,
+    oneSolution(S,N,R).
+decomposition(S,N,R):-
+    N < S,
+    NN is N + 1,
+    decomposition(S,NN,R).
+
+% allSolutions(N:number, R:list)
+% allSolutions(i, o)
+
+allSolutions(N, R) :-
+    findall(RPartial, decomposition(N, 1, RPartial), R).

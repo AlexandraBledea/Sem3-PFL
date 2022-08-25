@@ -1,0 +1,58 @@
+% 5.
+% a. Substitute all occurrences of an element of a list with all the elements of another list.
+%    Eg. subst([1,2,1,3,1,4],1,[10,11],X) produces X=[10,11,2,10,11,3,10,11,4].
+%    
+%    
+% myAppend(l1l2...ln, p1p2...pm) = 
+% = p1p2...pm, if n = 0
+% = {l1} U myAppend(l2...ln, p1p2...pm), otherwise
+
+% myAppend(L:list, P:list, R:list)
+% (i,i,o)
+
+myAppend([],P,P).
+myAppend([H|T],P,[H|R]):-
+    myAppend(T,P,R).
+
+
+% mySubstitute(l1l2...ln, elem, p1p2...pm) = 
+% = [], if n = 0
+% = p1p2...pm U mySubstitute(l2...ln, elem, p1p2...pm), if l1 = elem
+% = {l1} U mySubstitute(l2...ln, elem, p1p2...pm), otherwise
+
+
+% mySubstitute(L:list, E:number, P:list, R:result)
+% (i,i,i,o)
+
+mySubstitute([],_,_,[]).
+mySubstitute([H|T],E,P,R1):-
+    H=:=E,
+    myAppend(P,R,R1),
+    mySubstitute(T,E,P,R).
+mySubstitute([H|T],E,P,[H|R]):-
+    H=\=E,
+    mySubstitute(T,E,P,R).
+    
+% b. For a heterogeneous list, formed from integer numbers and list of numbers, replace in every sublist all
+%    occurrences of the first element from sublist it a new given list.
+%    Eg.: [1, [4, 1, 4], 3, 6, [7, 10, 1, 3, 9], 5, [1, 1, 1], 7] si [11, 11] =>
+%    [1, [11, 11, 1, 11, 11], 3, 6, [11, 11, 10, 1, 3, 9], 5, [11 11 11 11 11 11], 7]
+    
+
+% heterList(l1l2...ln, p1p2...pm) = 
+% = [], if n = 0
+% = mySubstitute(l'1....l'm, l'1, p1p2...pm) U heterList(l2...ln, p1p2...pm), if l1 is a list and l1 = l'1...l'm
+% = {l1} U heterList(l2...ln, p1p2...pm), otherwise
+
+% heterList(L: List, P: List, R: List)
+% (i,i,o)
+
+heterList([],_,[]).
+heterList([[H|HT]|T],P,[RS|R]):-
+    mySubstitute([H|HT],H,P,RS),
+    heterList(T,P,R), !.
+heterList([H|T],P,[H|R]):-
+    heterList(T,P,R).
+    
+    
+

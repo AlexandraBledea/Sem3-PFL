@@ -1,0 +1,15 @@
+; 15. Write a function that reverses a list together with all its sublists elements, at any level.
+
+; myAppend(l1l2...ln, p1p2...pm) = 
+; = p1p2...pm, if n = 0
+; = {l1} U myAppend(l2...ln, p1p2...pm), otherwisw
+
+(defun myAppend(l p)
+  (cond
+    ((null l) p)
+    (t (cons (car l) (myAppend (cdr l) p)))
+  )
+)
+
+; myReverse(l1l2...ln) = 
+; = 

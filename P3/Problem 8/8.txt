@@ -1,0 +1,45 @@
+% 8. Generate all strings of n parenthesis correctly closed.
+%    Eg: n=4 => (()) and () ()
+
+paranteza('(').
+paranteza(')').
+
+% allcombinations(n, i, c) =
+% 	c, i = n
+% 	allcombinations(n, i + 1, paranteza(x) + c), otherwise
+
+% allcombinations(N:number, I:number, C:list, R:list)
+% allcombinations(i, i, i, o)
+
+allcombinations(N, N, C, C) :- !.
+allcombinations(N, I, C, R) :-
+    paranteza(X),
+    NI is I + 1,
+    allcombinations(N, NI, [X|C], R).
+
+% check(l1l2...ln, c) = 
+% = true, if n = 0 and c = 0
+% = check(l2...ln, c + 1), if l1 = '('
+% = check(l2...ln, c - 1), if l1 = ')' and c > 0
+% = false, otherwise
+
+check([],0):-!.
+check([H|T],C):-
+    H == '(',
+    C1 is C + 1,
+    check(T,C1).
+check([H|T],C):-
+    H == ')',
+    C > 0,
+    C1 is C - 1,
+    check(T,C1).
+
+
+% oneSol(N: number, R:result list)
+% (i,o)
+oneSol(N,R):-
+    allcombinations(N,0,[],R),
+    check(R,0).
+
+allSols(N,R):-
+    findall(RPartial, oneSol(N,RPartial),R).
